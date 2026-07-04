@@ -1,0 +1,29 @@
+# Centralized Dependencies for ASHA Sahaayak Backend
+
+# Flask Core API
+Flask>=3.0.0
+flask-cors>=6.0.0
+
+# Audio Processing & Speech-to-Text (ASR)
+openai-whisper>=20231117
+sounddevice>=0.4.6
+scipy>=1.10.0
+numpy>=1.24.0
+torch>=2.0.0
+
+# Retrieval-Augmented Generation (RAG)
+langchain-core>=1.0.0
+langchain-community>=0.0.30
+langchain-huggingface>=1.0.0
+langchain-text-splitters>=1.0.0
+sentence-transformers>=3.0.0
+chromadb>=1.0.0
+pypdf>=4.0.0
+
+# LLM provider integrations (selected with LLM_PROVIDER)
+langchain-google-genai>=2.0.0
+langchain-openai>=0.3.0
+langchain-ollama>=0.3.0
+
+# Environment configuration
+python-dotenv>=1.0.0

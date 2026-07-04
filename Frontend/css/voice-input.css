@@ -1,0 +1,393 @@
+/* ==========================================================================
+   ASHA-Sahaayak Voice & Text Input Component Aesthetics
+   ========================================================================== */
+
+/* Patient Selector Header Styling */
+.patient-selector-card {
+  margin-bottom: 32px;
+}
+
+.patient-select-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .patient-select-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Voice & Text Grid */
+.voice-text-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .voice-text-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Section Header Badging */
+.voice-card-header {
+  margin-bottom: 24px;
+}
+
+.voice-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.voice-desc {
+  font-size: 0.85rem;
+  color: var(--neutral-400);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Section A: Voice Recording Visualizer
+   ========================================================================== */
+
+.voice-visualizer {
+  height: 200px;
+  background-color: var(--neutral-50);
+  border: var(--border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pulsing Mic Rings */
+.mic-ring {
+  position: absolute;
+  border-radius: var(--radius-full);
+  background-color: rgba(37, 99, 235, 0.06);
+  width: 90px;
+  height: 90px;
+  transition: transform var(--transition-normal), opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.mic-ring--outer {
+  width: 140px;
+  height: 140px;
+  background-color: rgba(37, 99, 235, 0.03);
+}
+
+.mic-ring.pulsing {
+  animation: pulseOuter 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.mic-ring--inner.pulsing {
+  animation: pulseInner 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  animation-delay: 0.4s;
+}
+
+@keyframes pulseOuter {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseInner {
+  0% {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Record Button Widget */
+.mic-button {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+  transition: all var(--transition-normal);
+}
+.mic-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.45);
+}
+
+.mic-button.recording {
+  background: linear-gradient(135deg, var(--danger-500), var(--danger-600));
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+  animation: floatMic 2s infinite ease-in-out;
+}
+.mic-button.recording:hover {
+  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.55);
+}
+
+@keyframes floatMic {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.mic-button svg {
+  width: 28px;
+  height: 28px;
+  transition: transform var(--transition-bounce);
+}
+.mic-button:active svg {
+  transform: scale(0.9);
+}
+
+/* Recording Status Bar */
+.recording-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--neutral-600);
+  margin-bottom: 24px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--neutral-400);
+  border-radius: var(--radius-full);
+}
+
+.status-dot.recording {
+  background-color: var(--danger-500);
+  animation: flashDot 1s infinite alternate;
+}
+
+@keyframes flashDot {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+.voice-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ==========================================================================
+   Transcript Box Area
+   ========================================================================== */
+
+.transcript-area {
+  margin-bottom: 20px;
+}
+
+.transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.transcript-label {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--neutral-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.transcript-clear {
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--neutral-400);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.transcript-clear:hover {
+  color: var(--danger-500);
+}
+
+.transcript-box {
+  background-color: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  min-height: 120px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.transcript-placeholder {
+  color: var(--neutral-400);
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+.transcript-text {
+  font-size: 0.95rem;
+  color: var(--neutral-800);
+  line-height: 1.6;
+}
+
+/* Language Switch Buttons */
+.voice-lang-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--neutral-600);
+}
+
+.lang-btn {
+  background: none;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-full);
+  padding: 4px 14px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--neutral-600);
+  transition: all var(--transition-fast);
+}
+.lang-btn:hover {
+  background-color: var(--neutral-100);
+  color: var(--neutral-900);
+}
+.lang-btn.active {
+  background-color: var(--accent-blue-light);
+  border-color: rgba(37, 99, 235, 0.25);
+  color: var(--accent-blue);
+}
+
+/* ==========================================================================
+   Section B: Text Input & Symptom Chips
+   ========================================================================== */
+
+.text-input-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.symptom-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chip-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--neutral-600);
+}
+
+.chip {
+  background-color: var(--neutral-100);
+  border: 1px solid var(--neutral-200);
+  color: var(--neutral-700);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.chip:hover {
+  background-color: var(--primary-50);
+  border-color: rgba(22, 163, 74, 0.2);
+  color: var(--primary-600);
+  transform: translateY(-1px);
+}
+.chip:active {
+  transform: translateY(0);
+}
+
+.text-symptom-area {
+  flex: 1;
+}
+
+.text-input-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 24px;
+}
+
+.char-count {
+  font-size: 0.78rem;
+  color: var(--neutral-400);
+  font-weight: 500;
+}
+
+.btn-text-clear {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--neutral-400);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.btn-text-clear:hover {
+  color: var(--danger-500);
+}
+
+/* ==========================================================================
+   Analyze & Loading Trigger
+   ========================================================================== */
+
+.analyze-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: var(--border-light);
+  padding-top: 24px;
+}
+
+.btn-analyze {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+}
+
+.analyze-hint {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  text-align: center;
+  line-height: 1.4;
+}

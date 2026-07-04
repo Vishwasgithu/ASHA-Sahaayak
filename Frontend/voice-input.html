@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice & Text Input | ASHA-Sahaayak</title>
+  <meta name="description" content="Record patient symptoms via voice or text input for AI analysis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/voice-input.css" />
+</head>
+<body class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon logo-icon--sm">
+          <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="url(#sg3)"/><path d="M20 10 C20 10, 28 16, 28 22 C28 26.4, 24.4 30, 20 30 C15.6 30, 12 26.4, 12 22 C12 16, 20 10 20 10Z" fill="white" opacity="0.9"/><path d="M17 20 L19 22 L23 18" stroke="#1a6b3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="sg3" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#059669"/></linearGradient></defs></svg>
+        </div>
+        <div><span class="sidebar-app-name">ASHA-Sahaayak</span><span class="sidebar-app-sub">Healthcare Assistant</span></div>
+      </div>
+      <button class="sidebar-close" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-label">Dashboard</span></a>
+      <a href="new-patient.html" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></span><span class="nav-label">New Patient</span></a>
+      <a href="patient-history.html" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span class="nav-label">Patient History</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-label">Reports</span></a>
+      <a href="alerts.html" class="nav-item nav-item--alert"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span><span class="nav-label">Alerts</span><span class="nav-badge">3</span></a>
+      <a href="voice-input.html" class="nav-item active"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></span><span class="nav-label">Voice Input</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a href="settings.html" class="nav-item"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span><span class="nav-label">Settings</span></a>
+      <div class="sidebar-user">
+        <div class="user-avatar">P</div>
+        <div class="user-info"><span class="user-name">Priya Sharma</span><span class="user-role">ASHA Worker · Raipur</span></div>
+        <a href="index.html" class="logout-btn" title="Logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></a>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="hamburger" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div>
+          <h1 class="page-title">Voice & Text Input</h1>
+          <p class="page-subtitle">Record patient symptoms via voice or text for AI analysis</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <!-- Patient Selector -->
+      <div class="card patient-selector-card">
+        <label class="form-label">Select Patient</label>
+        <div class="patient-select-row">
+          <div class="input-wrapper" style="flex:1">
+            <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <select class="form-input form-select" id="selectedPatient">
+              <option value="">Choose a patient...</option>
+              <option value="1">Sunita Devi — Village: Karmapur, Month 7</option>
+              <option value="2">Meena Kumari — Village: Bhilai, Month 5</option>
+              <option value="3">Rekha Pandey — Village: Durg, Month 3</option>
+              <option value="4">Laxmi Bai — Village: Raipur, Month 8</option>
+              <option value="5">Anita Sahu — Village: Simga, Month 6</option>
+            </select>
+          </div>
+          <a href="new-patient.html" class="btn btn-secondary">+ New Patient</a>
+        </div>
+      </div>
+
+      <div class="voice-text-grid">
+        <!-- Section A: Voice Input -->
+        <div class="card voice-card">
+          <div class="voice-card-header">
+            <div class="voice-card-title-row">
+              <div class="section-badge section-badge--blue">Section A</div>
+              <h2 class="card-title">Voice Input</h2>
+            </div>
+            <p class="voice-desc">Speak patient symptoms in Hindi or English. The AI will transcribe and analyze.</p>
+          </div>
+          
+          <div class="voice-visualizer" id="voiceVisualizer">
+            <div class="mic-ring mic-ring--outer" id="micRingOuter"></div>
+            <div class="mic-ring mic-ring--inner" id="micRingInner"></div>
+            <button class="mic-button" id="micBtn" onclick="toggleRecording()" title="Toggle Recording">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+                <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="recording-status" id="recordingStatus">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Click microphone to start recording</span>
+          </div>
+
+          <div class="voice-controls">
+            <button class="btn btn-secondary" id="recordBtn" onclick="startRecording()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+              Record
+            </button>
+            <button class="btn btn-danger" id="stopBtn" onclick="stopRecording()" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12"/></svg>
+              Stop
+            </button>
+          </div>
+
+          <div class="transcript-area">
+            <div class="transcript-header">
+              <span class="transcript-label">Speech Transcript</span>
+              <button class="transcript-clear" onclick="clearTranscript()" id="clearTranscriptBtn">Clear</button>
+            </div>
+            <div class="transcript-box" id="transcriptBox">
+              <p class="transcript-placeholder">Transcribed speech will appear here...</p>
+            </div>
+          </div>
+
+          <div class="voice-lang-selector">
+            <span>Language:</span>
+            <button class="lang-btn active" onclick="setLang('hi', this)">हिंदी</button>
+            <button class="lang-btn" onclick="setLang('en', this)">English</button>
+          </div>
+        </div>
+
+        <!-- Section B: Text Input -->
+        <div class="card text-input-card">
+          <div class="voice-card-header">
+            <div class="voice-card-title-row">
+              <div class="section-badge section-badge--green">Section B</div>
+              <h2 class="card-title">Text Input</h2>
+            </div>
+            <p class="voice-desc">Type or paste patient symptoms, observations, and clinical notes for analysis.</p>
+          </div>
+
+          <div class="text-input-area">
+            <div class="symptom-chips">
+              <span class="chip-label">Quick Add:</span>
+              <button class="chip" onclick="addSymptom('Fever')">Fever</button>
+              <button class="chip" onclick="addSymptom('Dizziness')">Dizziness</button>
+              <button class="chip" onclick="addSymptom('Nausea')">Nausea</button>
+              <button class="chip" onclick="addSymptom('High BP')">High BP</button>
+              <button class="chip" onclick="addSymptom('Swelling')">Swelling</button>
+              <button class="chip" onclick="addSymptom('Headache')">Headache</button>
+              <button class="chip" onclick="addSymptom('Fatigue')">Fatigue</button>
+              <button class="chip" onclick="addSymptom('Bleeding')">Bleeding</button>
+            </div>
+            <textarea
+              id="symptomText"
+              class="form-input form-textarea text-symptom-area"
+              placeholder="Describe patient symptoms here...
+Example: Patient reports fever since 2 days, dizziness while standing, and mild headache. Blood pressure reading is 140/90. Currently in 7th month of pregnancy."
+              rows="10"
+            ></textarea>
+            <div class="text-input-footer">
+              <span class="char-count" id="charCount">0 characters</span>
+              <button class="btn-text-clear" onclick="clearText()">Clear</button>
+            </div>
+          </div>
+
+          <div class="analyze-section">
+            <button class="btn btn-primary btn-analyze" id="analyzeBtn" onclick="analyzeInput()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              Analyze with AI
+            </button>
+            <p class="analyze-hint">AI analysis will detect symptoms, assess risk level, and generate recommendations</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    let isRecording = false;
+    let recordingTimer;
+    let seconds = 0;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    window.recordedAudioBlob = null;
+
+    function toggleRecording() {
+      isRecording ? stopRecording() : startRecording();
+    }
+
+    async function startRecording() {
+      try {
+        console.log("Requesting microphone permission...");
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Microphone permission granted");
+
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          console.log("Recording stopped");
+
+          // Create the audio blob
+          const blobType = mediaRecorder.mimeType || 'audio/webm';
+          const blob = new Blob(audioChunks, { type: blobType });
+          window.recordedAudioBlob = blob;
+
+          console.log("Audio blob created");
+          console.log("Blob size:", blob.size);
+          console.log("Blob type:", blob.type);
+
+          // Calculate and display duration
+          const durationStr = `${Math.floor(seconds/60).toString().padStart(2,'0')}:${(seconds%60).toString().padStart(2,'0')}`;
+
+          // Stop all stream tracks to release the microphone device
+          stream.getTracks().forEach(track => track.stop());
+
+          // ── Upload & Transcribe ──────────────────────────────────────────
+          const statusText  = document.getElementById('statusText');
+          const statusDot   = document.getElementById('statusDot');
+          const transcriptBox = document.getElementById('transcriptBox');
+
+          // Helper: set a non-recording status with optional spinner dot
+          function setStatus(msg, busy = false) {
+            statusText.textContent = msg;
+            if (busy) {
+              statusDot.classList.add('recording');
+            } else {
+              statusDot.classList.remove('recording');
+            }
+          }
+
+          // Helper: show error inside the transcript box
+          function showTranscriptError(msg) {
+            transcriptBox.innerHTML = `
+              <div class="transcript-error" style="color:#ef4444;padding:12px;border-radius:8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);">
+                <strong>⚠ Error:</strong> ${msg}
+              </div>`;
+          }
+
+          try {
+            // Step 1 – Uploading
+            console.log("Uploading audio...");
+            setStatus("Uploading audio...", true);
+            transcriptBox.innerHTML = '<p class="transcript-placeholder">Uploading audio to server...</p>';
+
+            const formData = new FormData();
+            // Derive a sensible filename from the MIME type (e.g. audio/webm → voice_input.webm)
+            const ext = blobType.split('/')[1]?.split(';')[0] || 'webm';
+            formData.append('audio', blob, `voice_input.${ext}`);
+
+            const uploadResponse = await fetch('http://127.0.0.1:5000/api/transcribe', {
+              method: 'POST',
+              body: formData
+            });
+
+            console.log("Response received...", uploadResponse.status);
+
+            // Step 2 – Transcribing (server is working)
+            setStatus("Transcribing...", true);
+            transcriptBox.innerHTML = '<p class="transcript-placeholder">Transcribing with Whisper AI...</p>';
+
+            if (!uploadResponse.ok) {
+              // Try to read a JSON error body; fall back to status text
+              let errMsg = `Server error ${uploadResponse.status}`;
+              try {
+                const errData = await uploadResponse.json();
+                errMsg = errData.error || errMsg;
+              } catch (_) { /* ignore parse failure */ }
+              throw new Error(errMsg);
+            }
+
+            const data = await uploadResponse.json();
+            console.log("Transcript received...", data);
+
+            // Step 3 – Success
+            const transcript = data.input_text || data.text || '';
+
+            if (!transcript) {
+              throw new Error("Whisper returned an empty transcript. Please speak clearly and try again.");
+            }
+
+            // Show transcript in the transcript box
+            transcriptBox.innerHTML = `<p class="transcript-text">${transcript}</p>`;
+
+            // Auto-fill the symptom text area
+            const symptomTextArea = document.getElementById('symptomText');
+            if (symptomTextArea) {
+              symptomTextArea.value = transcript;
+              // Fire input event so char-count updates
+              symptomTextArea.dispatchEvent(new Event('input'));
+            }
+
+            setStatus(`✓ Analysis completed — recording ${durationStr}`, false);
+            window.showToast("Transcription complete! Symptom field populated.", "success");
+
+          } catch (err) {
+            console.error("Transcription/upload error:", err);
+            setStatus("Upload failed — check console for details", false);
+            showTranscriptError(err.message || "Unknown error during transcription.");
+            window.showToast("Transcription failed: " + (err.message || "Unknown error"), "error");
+          }
+          // ────────────────────────────────────────────────────────────────
+        };
+
+        // Start MediaRecorder
+        mediaRecorder.start();
+        console.log("Recording started");
+
+        isRecording = true;
+        document.getElementById('micBtn').classList.add('recording');
+        document.getElementById('micRingOuter').classList.add('pulsing');
+        document.getElementById('micRingInner').classList.add('pulsing');
+        document.getElementById('statusDot').classList.add('recording');
+        document.getElementById('recordBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        seconds = 0;
+        
+        recordingTimer = setInterval(() => {
+          seconds++;
+          document.getElementById('statusText').textContent = `Recording... ${Math.floor(seconds/60).toString().padStart(2,'0')}:${(seconds%60).toString().padStart(2,'0')}`;
+        }, 1000);
+        document.getElementById('statusText').textContent = 'Recording... 00:00';
+
+      } catch (err) {
+        console.error("Failed to start recording:", err);
+        window.showToast("Error: Microphone access denied or not available", "error");
+        document.getElementById('statusText').textContent = "Microphone access error";
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+      }
+
+      isRecording = false;
+      clearInterval(recordingTimer);
+      document.getElementById('micBtn').classList.remove('recording');
+      document.getElementById('micRingOuter').classList.remove('pulsing');
+      document.getElementById('micRingInner').classList.remove('pulsing');
+      document.getElementById('statusDot').classList.remove('recording');
+      document.getElementById('recordBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    function clearTranscript() {
+      document.getElementById('transcriptBox').innerHTML = '<p class="transcript-placeholder">Transcribed speech will appear here...</p>';
+      document.getElementById('statusText').textContent = 'Click microphone to start recording';
+    }
+
+    function addSymptom(s) {
+      const ta = document.getElementById('symptomText');
+      ta.value += (ta.value ? ', ' : '') + s;
+      updateCharCount();
+    }
+
+    function clearText() {
+      document.getElementById('symptomText').value = '';
+      updateCharCount();
+    }
+
+    function updateCharCount() {
+      const len = document.getElementById('symptomText').value.length;
+      document.getElementById('charCount').textContent = len + ' characters';
+    }
+
+    document.getElementById('symptomText').addEventListener('input', updateCharCount);
+
+    function setLang(lang, btn) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function analyzeInput() {
+      const text = document.getElementById('symptomText').value;
+      const patientId = document.getElementById('selectedPatient').value;
+      
+      if (!text.trim()) {
+        window.showToast('Please type or record some symptoms first!', 'error');
+        return;
+      }
+
+      localStorage.setItem('pendingAnalysis', JSON.stringify({ text, patientId }));
+
+      const btn = document.getElementById('analyzeBtn');
+      btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Analyzing...';
+      btn.disabled = true;
+      setTimeout(() => {
+        window.location.href = 'analysis-result.html';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>
