@@ -59,7 +59,7 @@ class FakeRetriever:
 
 
 class FakeGenerator:
-    def generate(self, _query: str, _documents: list[Document]) -> str:
+    def generate(self, _query: str, _documents: list[Document], *, language: str = "en") -> str:
         return "Check blood pressure. [Evidence 1]"
 
 

@@ -125,8 +125,18 @@
 
           <div class="voice-lang-selector">
             <span>Language:</span>
-            <button class="lang-btn active" onclick="setLang('hi', this)">हिंदी</button>
-            <button class="lang-btn" onclick="setLang('en', this)">English</button>
+            <button class="lang-btn active" data-lang="hi" onclick="setLang('hi', this)">हिंदी</button>
+            <button class="lang-btn" data-lang="en" onclick="setLang('en', this)">English</button>
+            <button class="lang-btn" data-lang="mr" onclick="setLang('mr', this)">मराठी</button>
+            <button class="lang-btn" data-lang="te" onclick="setLang('te', this)">తెలుగు</button>
+            <button class="lang-btn" data-lang="bn" onclick="setLang('bn', this)">বাংলা</button>
+            <button class="lang-btn" data-lang="ta" onclick="setLang('ta', this)">தமிழ்</button>
+            <button class="lang-btn" data-lang="gu" onclick="setLang('gu', this)">ગુજરાતી</button>
+            <button class="lang-btn" data-lang="kn" onclick="setLang('kn', this)">ಕನ್ನಡ</button>
+            <button class="lang-btn" data-lang="ml" onclick="setLang('ml', this)">മലയാളം</button>
+            <button class="lang-btn" data-lang="or" onclick="setLang('or', this)">ଓଡ଼ିଆ</button>
+            <button class="lang-btn" data-lang="pa" onclick="setLang('pa', this)">ਪੰਜਾਬੀ</button>
+            <button class="lang-btn" data-lang="as" onclick="setLang('as', this)">অসমীয়া</button>
           </div>
         </div>
 
@@ -258,6 +268,8 @@ Example: Patient reports fever since 2 days, dizziness while standing, and mild 
             // Derive a sensible filename from the MIME type (e.g. audio/webm → voice_input.webm)
             const ext = blobType.split('/')[1]?.split(';')[0] || 'webm';
             formData.append('audio', blob, `voice_input.${ext}`);
+            // Send the selected language so Whisper transcribes in that language.
+            formData.append('language', window.localStorage.getItem('asha_language') || 'en');
 
             const uploadResponse = await fetch('http://127.0.0.1:5000/api/transcribe', {
               method: 'POST',
@@ -380,7 +392,19 @@ Example: Patient reports fever since 2 days, dizziness while standing, and mild 
     function setLang(lang, btn) {
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      // Persist the chosen language so it survives the navigation to the
+      // results page and is sent with every backend analysis request.
+      window.localStorage.setItem('asha_language', lang);
     }
+
+    // Initialise the persisted language from the button marked active on load
+    // (Hindi is active by default) so the first analysis request carries a
+    // language even if the worker never changes the selection.
+    (function initLanguage() {
+      const active = document.querySelector('.lang-btn.active');
+      const lang = active && active.dataset.lang ? active.dataset.lang : 'en';
+      window.localStorage.setItem('asha_language', lang);
+    })();
 
     function analyzeInput() {
       const text = document.getElementById('symptomText').value;
@@ -391,6 +415,7 @@ Example: Patient reports fever since 2 days, dizziness while standing, and mild 
         return;
       }
 
+      localStorage.setItem("lastInputText", text);
       localStorage.setItem('pendingAnalysis', JSON.stringify({ text, patientId }));
 
       const btn = document.getElementById('analyzeBtn');

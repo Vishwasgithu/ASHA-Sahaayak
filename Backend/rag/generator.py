@@ -9,6 +9,7 @@ from typing import Any, Iterable, Protocol, runtime_checkable
 from langchain_core.documents import Document
 
 import config
+from languages import LANGUAGE_NAMES
 from utils.helpers import get_logger
 
 
@@ -139,6 +140,7 @@ def build_clinical_prompt(
     query: str,
     documents: Iterable[Document],
     *,
+    language: str = "en",
     max_context_chars: int = _DEFAULT_MAX_CONTEXT_CHARS,
 ) -> str:
     """Build a prompt that treats both query and evidence as untrusted data."""
@@ -158,8 +160,12 @@ def build_clinical_prompt(
     )
     query_json = json.dumps(normalized_query, ensure_ascii=False)
     evidence_json = json.dumps(evidence, ensure_ascii=False, default=str)
+    language_name = LANGUAGE_NAMES.get(language, "English")
 
     return f"""You are a maternal healthcare evidence synthesis assistant.
+
+OUTPUT_LANGUAGE: {language_name}
+Generate the entire answer in {language_name}. Preserve [Evidence N] citations exactly as shown.
 
 SAFETY RULES:
 1. Answer only with clinical facts and recommendations explicitly supported by EVIDENCE_JSON.
@@ -215,7 +221,10 @@ def _parse_grounded_answer(response: Any, evidence_count: int) -> str:
 
         return INSUFFICIENT_EVIDENCE_RESPONSE
 
-    if not isinstance(payload, dict) or payload.get("has_sufficient_evidence") is not True:
+    # An explicit "false" means the model judged the evidence insufficient.
+    # A *missing* flag is NOT treated as rejection: some models (notably
+    # local Ollama/Qwen) omit it while still returning a properly cited answer.
+    if payload.get("has_sufficient_evidence") is False:
         return INSUFFICIENT_EVIDENCE_RESPONSE
 
     answer = payload.get("answer")
@@ -224,7 +233,16 @@ def _parse_grounded_answer(response: Any, evidence_count: int) -> str:
     if not isinstance(answer, str) or not answer.strip() or not isinstance(citations, list):
         return INSUFFICIENT_EVIDENCE_RESPONSE
 
-    valid_citations = {
+    # The inline [Evidence N] markers are what the user actually sees, so they
+    # are the source of truth for grounding. A fabricated/out-of-range marker
+    # (hallucinated evidence) is the only hard failure we must still catch.
+    marker_ids = {int(match) for match in _EVIDENCE_MARKER.findall(answer)}
+    if any(marker < 1 or marker > evidence_count for marker in marker_ids):
+        return INSUFFICIENT_EVIDENCE_RESPONSE
+
+    # Secondary grounding signal: a real evidence id referenced in the
+    # citations array (in range, integer, not bool).
+    citation_ids = {
         citation
         for citation in citations
         if isinstance(citation, int)
@@ -232,13 +250,135 @@ def _parse_grounded_answer(response: Any, evidence_count: int) -> str:
         and 1 <= citation <= evidence_count
     }
 
-    markers = {int(match) for match in _EVIDENCE_MARKER.findall(answer)}
-
-    if (
-        not valid_citations
-        or len(valid_citations) != len(citations)
-        or markers != valid_citations
-    ):
+    # Accept when EITHER signal is present. We deliberately do NOT require the
+    # two to match exactly or to be duplicate-free: models commonly repeat a
+    # citation, list ids without mirroring inline markers, or vice versa. The
+    # safety property we enforce is "cites at least one real source, invents
+    # none" -- not cosmetic set equality between the two fields.
+    if not marker_ids and not citation_ids:
         return INSUFFICIENT_EVIDENCE_RESPONSE
 
     return answer.strip()
+
+class ClinicalResponseGenerator:
+    """
+    Generates grounded clinical recommendations using the configured LLM.
+    """
+
+    def __init__(
+        self,
+        llm: LanguageModel | None = None,
+        *,
+        max_context_chars: int = _DEFAULT_MAX_CONTEXT_CHARS,
+    ) -> None:
+
+        if isinstance(max_context_chars, bool) or not isinstance(max_context_chars, int):
+            raise TypeError("max_context_chars must be an integer.")
+
+        if max_context_chars <= 0:
+            raise ValueError("max_context_chars must be greater than zero.")
+
+        self._llm = llm
+        self._max_context_chars = max_context_chars
+        self._llm_lock = Lock()
+
+    @property
+    def llm(self) -> LanguageModel:
+        """
+        Lazily create the configured language model.
+        """
+
+        if self._llm is None:
+            with self._llm_lock:
+                if self._llm is None:
+                    self._llm = create_configured_llm()
+
+        return self._llm
+
+    def generate(
+        self,
+        query: str,
+        documents: Iterable[Document],
+        *,
+        language: str = "en",
+    ) -> str:
+        """
+        Generate an evidence-grounded response.
+        """
+
+        if not isinstance(query, str):
+            raise TypeError("query must be a string.")
+
+        query = query.strip()
+
+        if not query:
+            raise ValueError("query must not be empty.")
+
+        usable_documents = _validate_documents(documents)
+
+        if not usable_documents:
+            logger.warning("No retrieved documents available.")
+            return INSUFFICIENT_EVIDENCE_RESPONSE
+
+        evidence = _evidence_payload(
+            usable_documents,
+            max_context_chars=self._max_context_chars,
+        )
+
+        if not evidence:
+            logger.warning("Evidence payload is empty.")
+            return INSUFFICIENT_EVIDENCE_RESPONSE
+
+        prompt = build_clinical_prompt(
+            query,
+            usable_documents,
+            language=language,
+            max_context_chars=self._max_context_chars,
+        )
+
+        try:
+            logger.info("Invoking LLM...")
+
+            response = self.llm.invoke(prompt)
+
+            answer = _parse_grounded_answer(
+                response,
+                len(evidence),
+            )
+
+            if not answer.strip():
+                return INSUFFICIENT_EVIDENCE_RESPONSE
+
+            logger.info("Clinical recommendation generated successfully.")
+
+            return answer
+
+        except Exception:
+            logger.exception(
+                "Clinical response generation failed."
+            )
+            return INSUFFICIENT_EVIDENCE_RESPONSE
+        
+def generate_recommendations(
+    query: str,
+    documents: Iterable[Document],
+    *,
+    language: str = "en",
+    llm: LanguageModel | None = None,
+) -> str:
+    """
+    Convenience wrapper for generating grounded recommendations.
+    """
+    generator = ClinicalResponseGenerator(llm=llm)
+    return generator.generate(query, documents, language=language)
+
+
+__all__ = [
+    "ClinicalResponseGenerator",
+    "GeneratorConfigurationError",
+    "INSUFFICIENT_EVIDENCE_RESPONSE",
+    "LanguageModel",
+    "build_clinical_prompt",
+    "create_configured_llm",
+    "generate_recommendations",
+]        

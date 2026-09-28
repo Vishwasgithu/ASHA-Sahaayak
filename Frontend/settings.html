@@ -209,10 +209,20 @@
                 <span class="option-desc">Toggle the main interface language.</span>
               </div>
               <div>
-                <select class="form-input form-select" style="width:130px; padding: 8px 30px 8px 12px; background-color: var(--neutral-50);" id="langSetting" onchange="window.showToast('Language updated successfully')">
-                  <option value="en">English</option>
-                  <option value="hi">हिंदी (Hindi)</option>
-                </select>
+                 <select class="form-input form-select" style="width:150px; padding: 8px 30px 8px 12px; background-color: var(--neutral-50);" id="langSetting" onchange="var v=this.value;window.localStorage.setItem('asha_language',v);window.showToast('Language updated successfully')">
+                   <option value="en">English</option>
+                   <option value="hi">हिंदी (Hindi)</option>
+                   <option value="bn">বাংলা (Bengali)</option>
+                   <option value="ta">தமிழ் (Tamil)</option>
+                   <option value="gu">ગુજરાતી (Gujarati)</option>
+                   <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                   <option value="ml">മലയാളം (Malayalam)</option>
+                   <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                   <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                   <option value="mr">मराठी (Marathi)</option>
+                   <option value="te">తెలుగు (Telugu)</option>
+                   <option value="as">অসমীয়া (Assamese)</option>
+                 </select>
               </div>
             </div>
 

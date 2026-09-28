@@ -319,7 +319,10 @@
 
           <!-- Input Text transcription block -->
           <div class="form-group">
-            <label class="form-label">Transcribed Text / Input Notes</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="form-label">Transcribed Text / Input Notes</label>
+              <span id="langIndicator" style="font-size:0.78rem; color:var(--neutral-500); font-weight:700;"></span>
+            </div>
             <div class="transcript-box" style="height: auto; min-height: 140px; background-color: var(--neutral-50);">
               <p class="transcript-text" id="reportInputText"></p>
             </div>
@@ -339,6 +342,7 @@
           
           <!-- Glowing Banner -->
           <div class="risk-banner-card" id="riskBanner">
+            <span id="riskLangBadge" style="position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.25); color:#fff; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;"></span>
             <span class="risk-banner-label">Screening Assessment</span>
             <div class="risk-banner-value" id="riskValue">LOW RISK</div>
             <p class="risk-banner-desc" id="riskGuidanceSummary">No maternal danger signals detected.</p>
@@ -409,6 +413,11 @@
       document.getElementById('loadingCard').style.display = 'none';
       document.getElementById('resultsCard').style.display = 'grid';
 
+      const lang = window.localStorage.getItem('asha_language') || 'en';
+      const langName = (window.LANGUAGE_MAP && window.LANGUAGE_MAP[lang]) ? window.LANGUAGE_MAP[lang] : lang;
+      document.getElementById('langIndicator').textContent = 'Language: ' + langName;
+      document.getElementById('riskLangBadge').textContent = langName;
+
       // Set Patient Details UI
       if (selectedPatient) {
         document.getElementById('avatarIcon').textContent = selectedPatient.name.charAt(0);
@@ -422,7 +431,8 @@
       }
 
       // Fill in inputs
-      document.getElementById('reportInputText').textContent = reportData.input_text;
+      document.getElementById('reportInputText').textContent =
+        reportData.input_text || localStorage.getItem("lastInputText") || "No input available";
 
       // Populate detected symptoms
       const symptomsContainer = document.getElementById('symptomsTagsContainer');
@@ -460,20 +470,62 @@
         document.getElementById('riskGuidanceSummary').textContent = '✓ LOW RISK: Vitals normal, regular follow-ups.';
       }
 
-      // Set directive notes
-      document.getElementById('detailedRecommendation').innerHTML = `
+      let recommendation = reportData.clinical_recommendation;
+
+      if (
+        !recommendation ||
+        recommendation === "undefined" ||
+        recommendation === "No immediate maternal risk detected."
+      ) {
+
+        switch (reportData.risk_level) {
+
+          case "EMERGENCY":
+            recommendation = `
 <b>Clinical Recommendation</b><br><br>
 
-• Immediate referral to the nearest PHC.<br>
-• Monitor blood pressure immediately.<br>
-• Do not delay referral.<br>
-• Continue monitoring maternal vital signs.<br><br>
-
-<b>Evidence (Demo)</b><br>
-WHO ANC Guidelines<br>
-NHM Maternal Health Guidelines<br>
-ASHA Handbook
+• Immediate emergency referral to the nearest hospital.<br>
+• Stabilize the patient while arranging transport.<br>
+• Inform the Medical Officer immediately.<br>
+• Continue monitoring vital signs until transfer.
 `;
+            break;
+
+          case "HIGH RISK":
+            recommendation = `
+<b>Clinical Recommendation</b><br><br>
+
+• Immediate referral to the nearest PHC/CHC.<br>
+• Monitor blood pressure and maternal condition.<br>
+• Educate the family about danger signs.<br>
+• Ensure follow-up within 24 hours.
+`;
+            break;
+
+          case "MEDIUM RISK":
+            recommendation = `
+<b>Clinical Recommendation</b><br><br>
+
+• Advise an early clinical assessment.<br>
+• Continue regular monitoring.<br>
+• Encourage adequate hydration and nutrition.<br>
+• Schedule an earlier follow-up visit.
+`;
+            break;
+
+          default:
+            recommendation = `
+<b>Clinical Recommendation</b><br><br>
+
+• Continue routine antenatal care.<br>
+• Take iron and folic acid tablets as prescribed.<br>
+• Maintain a balanced diet and adequate hydration.<br>
+• Attend all scheduled ANC visits.
+`;
+        }
+      }
+
+      document.getElementById("detailedRecommendation").innerHTML = recommendation;
     }
 
     // Save back to client profile in localStora

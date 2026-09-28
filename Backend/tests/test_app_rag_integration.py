@@ -76,6 +76,7 @@ class FlaskRAGIntegrationTests(unittest.TestCase):
                 "pregnancy_month",
                 "clinical_recommendation",
                 "sources",
+                "language",
                 "metadata",
             },
         )

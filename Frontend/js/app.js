@@ -167,14 +167,14 @@ function showToast(message, type = 'success') {
 
 // Local JavaScript Healthcare Engine Simulator (Fallback)
 const SIMULATED_SYMPTOMS = {
-  fever: { keywords: ['fever', 'bukhar', 'temp', 'temperature'], name: 'Fever' },
-  headache: { keywords: ['headache', 'sar dard', 'head pain'], name: 'Headache' },
-  dizziness: { keywords: ['dizziness', 'chakkar', 'dizzy'], name: 'Dizziness' },
-  swelling: { keywords: ['swelling', 'sujan', 'swell'], name: 'Swelling' },
-  vomiting: { keywords: ['vomiting', 'ulti', 'nausea'], name: 'Vomiting' },
-  bleeding: { keywords: ['bleeding', 'khoon', 'blood'], name: 'Bleeding' },
-  weakness: { keywords: ['weakness', 'kamzori', 'tired'], name: 'Weakness' },
-  diarrhoea: { keywords: ['diarrhoea', 'dast', 'loose motion'], name: 'Diarrhoea' }
+  fever: { keywords: ['fever', 'bukhar', 'temp', 'temperature', 'জ্বর', 'জ্বর', 'কাযচ্চল', 'તાવ', 'ಜ್ವರ', 'ജ്വരം', 'ଜ୍ୱର', 'ਤਾਵ', 'জ্বৰ'], name: 'Fever' },
+  headache: { keywords: ['headache', 'sar dard', 'head pain', 'মাথা ব্যথা', 'தலைவலி', 'માથાનો દુઃખ', 'ತಲೆ ನೋವು', 'തലവേദന', 'ମାଥା ଦୁଃଖ', 'ਸਿਰ ਦਰਦ', 'মূথা ব্যথা'], name: 'Headache' },
+  dizziness: { keywords: ['dizziness', 'chakkar', 'dizzy', 'চক্কর', 'தலைசுற்றல்', 'ચક્કર', 'ಚಕ್ಕರ', 'തലസുഴി', 'ଚକର', 'ਚੱਕਰ', 'চকৰ'], name: 'Dizziness' },
+  swelling: { keywords: ['swelling', 'sujan', 'swell', 'সোয়া', 'வீக்கம்', 'સૂજન', 'ಹೊಳು', 'വീക്ക്', 'ସୂଜନ', 'ਸੋਜ਼ਨ', 'সুজন'], name: 'Swelling' },
+  vomiting: { keywords: ['vomiting', 'ulti', 'nausea', 'বমি', 'வாந்தி', 'ઉલટી', 'ವಾಂತಿ', 'ഛാനകം', 'ବନ୍ତି', 'ਉਲਟੀ', 'বমি'], name: 'Vomiting' },
+  bleeding: { keywords: ['bleeding', 'khoon', 'blood', 'রক্তপাত', 'இரத்தப்போகம்', 'લોબો વટવું', 'ರಕ್ತಸ್ರಾವ', 'രക്തസ്രാവം', 'ରକ୍ତସ୍ରାବ', 'ਲਹੂ ਵਟਣਾ', 'রক্তস্ৰাব'], name: 'Bleeding' },
+  weakness: { keywords: ['weakness', 'kamzori', 'tired', 'দুর্বলতা', 'பலவீனம்', 'નરમી', 'ದುರ್ಬಲತೆ', 'ദുർബലത', 'ଦୁର୍ବଳତା', 'ਕਮਜ਼ੋਰੀ', 'দুৰ্বলতা'], name: 'Weakness' },
+  diarrhoea: { keywords: ['diarrhoea', 'dast', 'loose motion', 'ডায়রিয়া', 'வயிற்றுப்புணர்', 'દસત', 'ಜುರಾಯಿ', 'ജുരായി', 'ଡାଇରିଆ', 'ਦਸਤ', 'ডায়ৰিয়া'], name: 'Diarrhoea' }
 };
 
 function simulateHealthcareEngine(text) {
@@ -188,7 +188,7 @@ function simulateHealthcareEngine(text) {
   }
 
   // extract month
-  const monthMatch = lowerText.match(/(\d+)\s*month/);
+  const monthMatch = lowerText.match(/(\d+)\s*(month|મહિનો|ମାସ|মাস|மாதம்|నెల|ತಿಂಗಳು|മാസം|महिना|माह|ਮਹੀਨਾ|মাহ)/);
   const pregnancyMonth = monthMatch ? monthMatch[1] : null;
 
   let riskLevel = 'LOW RISK';
@@ -218,11 +218,14 @@ function simulateHealthcareEngine(text) {
 const apiClient = {
   // Analyze text via backend or fallback
   async analyzeText(text) {
+    // "asha_language" is set by the language selector on the input screen and
+    // persisted in localStorage so it survives the navigation to results.
+    const language = window.localStorage.getItem('asha_language') || 'en';
     try {
       const response = await fetch(`${API_BASE_URL}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
+        body: JSON.stringify({ text, language })
       });
       if (response.ok) {
         return await response.json();
@@ -239,6 +242,8 @@ const apiClient = {
     const formData = new FormData();
     const ext = audioBlob.type.split('/')[1]?.split(';')[0] || 'webm';
     formData.append('audio', audioBlob, `voice_input.${ext}`);
+    // Carry the selected language so the backend can use it for ASR + analysis.
+    formData.append('language', window.localStorage.getItem('asha_language') || 'en');
 
     const response = await fetch(`${API_BASE_URL}/api/transcribe`, {
       method: 'POST',
@@ -257,6 +262,22 @@ const apiClient = {
     return await response.json();
   }
 };
+
+const LANGUAGE_MAP = {
+  en: 'English',
+  hi: 'हिंदी',
+  bn: 'বাংলা',
+  ta: 'தமிழ்',
+  gu: 'ગુજરાતી',
+  kn: 'ಕನ್ನಡ',
+  ml: 'മലയാളം',
+  or: 'ଓଡ଼ିଆ',
+  pa: 'ਪੰਜਾਬੀ',
+  mr: 'मराठी',
+  te: 'తెలుగు',
+  as: 'অসমীয়া'
+};
+window.LANGUAGE_MAP = LANGUAGE_MAP;
 
 // Global exports
 window.getPatients = getPatients;

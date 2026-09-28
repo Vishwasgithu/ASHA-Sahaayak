@@ -1,0 +1,34 @@
+﻿id,category,language,input_text,expected_symptoms,predicted_symptoms,symptom_correct,expected_risk,predicted_risk,risk_correct,status
+HR_01,HIGH,English,I am experiencing bleeding during pregnancy.,bleeding,bleeding,True,HIGH RISK,HIGH RISK,True,PASS
+HR_02,HIGH,English,I have severe abdominal pain.,severe abdominal pain,severe abdominal pain,True,HIGH RISK,HIGH RISK,True,PASS
+HR_03,HIGH,English,My baby is moving less than usual.,reduced fetal movement,reduced fetal movement,True,HIGH RISK,HIGH RISK,True,PASS
+HR_04,HIGH,English,"I have headache, swelling, and blurred vision.","blurred vision, headache, swelling","blurred vision, headache, swelling",True,HIGH RISK,HIGH RISK,True,PASS
+HR_05,HIGH,English,I have bleeding and weakness.,"bleeding, weakness","bleeding, weakness",True,HIGH RISK,HIGH RISK,True,PASS
+HR_06,HIGH,English,I have reduced fetal movement and dizziness.,"dizziness, reduced fetal movement","dizziness, reduced fetal movement",True,HIGH RISK,HIGH RISK,True,PASS
+HR_07,HIGH,English,I have severe abdominal pain and vomiting.,"severe abdominal pain, vomiting","severe abdominal pain, vomiting",True,HIGH RISK,HIGH RISK,True,PASS
+HR_08,HIGH,Hindi,मुझे खून आ रहा है।,bleeding,bleeding,True,HIGH RISK,HIGH RISK,True,PASS
+HR_09,HIGH,Hindi,मुझे तेज पेट दर्द हो रहा है।,severe abdominal pain,severe abdominal pain,True,HIGH RISK,HIGH RISK,True,PASS
+HR_10,HIGH,English,I have headache and swelling and my vision is blurred.,"blurred vision, headache, swelling","blurred vision, headache, swelling",True,HIGH RISK,HIGH RISK,True,PASS
+MR_01,MEDIUM,English,I have fever.,fever,fever,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_02,MEDIUM,English,I have been vomiting repeatedly.,vomiting,vomiting,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_03,MEDIUM,English,I am feeling very weak.,weakness,weakness,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_04,MEDIUM,English,I have fever and weakness.,"fever, weakness","fever, weakness",True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_05,MEDIUM,English,I have vomiting and dizziness.,"dizziness, vomiting","dizziness, vomiting",True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_06,MEDIUM,English,I have fever and headache.,"fever, headache","fever, headache",True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_07,MEDIUM,Hindi,मुझे बुखार है।,fever,fever,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_08,MEDIUM,Hindi,मुझे उल्टी हो रही है।,vomiting,vomiting,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_09,MEDIUM,Hindi,मुझे कमजोरी महसूस हो रही है।,weakness,weakness,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+MR_10,MEDIUM,Romanized Hindi,Mujhe bukhar aur kamzori hai.,"fever, weakness","fever, weakness",True,MEDIUM RISK,MEDIUM RISK,True,PASS
+LR_01,LOW,English,I have a headache.,headache,headache,True,LOW RISK,LOW RISK,True,PASS
+LR_02,LOW,English,I have some swelling.,swelling,swelling,True,LOW RISK,LOW RISK,True,PASS
+LR_03,LOW,English,I feel dizzy.,dizziness,dizziness,True,LOW RISK,LOW RISK,True,PASS
+LR_04,LOW,English,I have diarrhoea.,diarrhoea,diarrhoea,True,LOW RISK,LOW RISK,True,PASS
+LR_05,LOW,English,My vision is blurry.,blurred vision,blurred vision,True,LOW RISK,LOW RISK,True,PASS
+LR_06,LOW,Hindi,मुझे सिरदर्द है।,headache,headache,True,LOW RISK,LOW RISK,True,PASS
+LR_07,LOW,Hindi,मुझे चक्कर आ रहे हैं।,dizziness,dizziness,True,LOW RISK,LOW RISK,True,PASS
+LR_08,LOW,Hindi,मुझे दस्त हो रहे हैं।,diarrhoea,diarrhoea,True,LOW RISK,LOW RISK,True,PASS
+NEG_01,NEGATION,English,I have no fever.,,,True,LOW RISK,LOW RISK,True,PASS
+NEG_02,NEGATION,English,I do not have bleeding.,,,True,LOW RISK,LOW RISK,True,PASS
+NEG_03,NEGATION,English,I have no fever but I am vomiting.,vomiting,vomiting,True,MEDIUM RISK,MEDIUM RISK,True,PASS
+NEG_04,NEGATION,Romanized Hindi,Mujhe bukhar nahi hai.,,,True,LOW RISK,LOW RISK,True,PASS
+NEG_05,NEGATION,Romanized Hindi,Mujhe khoon nahi aa raha hai lekin kamzori hai.,weakness,weakness,True,MEDIUM RISK,MEDIUM RISK,True,PASS

@@ -116,6 +116,25 @@
           </div>
           
           <form id="newPatientForm" onsubmit="handlePatientSave(event)">
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label class="form-label" for="patientLanguage">Patient Language</label>
+              <div class="input-wrapper">
+                <select id="patientLanguage" class="form-input form-select" style="width:220px;" onchange="window.localStorage.setItem('asha_language',this.value)">
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                  <option value="bn">বাংলা (Bengali)</option>
+                  <option value="ta">தமிழ் (Tamil)</option>
+                  <option value="gu">ગુજરાતી (Gujarati)</option>
+                  <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                  <option value="ml">മലയാളം (Malayalam)</option>
+                  <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                  <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                  <option value="te">తెలుగు (Telugu)</option>
+                  <option value="as">অসমীয়া (Assamese)</option>
+                </select>
+              </div>
+            </div>
             <div class="form-section">
               <h3 class="form-section-title">Personal Details</h3>
               <div class="form-grid">
@@ -290,8 +309,10 @@
       }
 
       // Save pending notes for analysis
+      const inputText = notes + (month ? ` Currently in month ${month} of pregnancy.` : '');
+      localStorage.setItem("lastInputText", inputText);
       localStorage.setItem('pendingAnalysis', JSON.stringify({
-        text: notes + (month ? ` Currently in month ${month} of pregnancy.` : ''),
+        text: inputText,
         patientId: null // walk-in run
       }));
 
@@ -300,6 +321,11 @@
     function clearForm() {
       document.getElementById('newPatientForm').reset();
     }
+    (function() {
+      var lang = window.localStorage.getItem('asha_language') || 'hi';
+      var sel = document.getElementById('patientLanguage');
+      if (sel) sel.value = lang;
+    })();
   </script>
 </body>
 </html>

@@ -7,6 +7,7 @@ from flask_cors import CORS
 import whisper 
 
 from healthcare_engine import process_healthcare_input
+from languages import validate_language, LANGUAGE_NAMES
 from rag.pipeline import RAGPipeline
 from utils.helpers import get_logger
 
@@ -32,7 +33,7 @@ except Exception as e:
     model = None
 
 
-def _legacy_guidance_fallback(analysis: dict[str, Any]) -> str:
+def _legacy_guidance_fallback(analysis: dict[str, Any], language: str = "en") -> str:
     """Return the pre-RAG guidance only when RAG is operationally unavailable."""
     symptoms = set(analysis.get("symptoms") or [])
 
@@ -59,13 +60,22 @@ def _legacy_guidance_fallback(analysis: dict[str, Any]) -> str:
     return "No immediate maternal risk detected."
 
 
-def analyze_healthcare_text(text: str) -> dict[str, Any]:
-    """Run rule-based screening followed by evidence-grounded RAG generation."""
+def analyze_healthcare_text(
+    text: str, language: str = "en"
+) -> dict[str, Any]:
+    """Run rule-based screening followed by evidence-grounded RAG generation.
+
+    ``language`` is the ISO-639-1 code selected on the frontend (e.g. "en",
+    "hi", "mr", "te", "bn", "ta", "gu", "kn", "ml", "or", "pa", "as"). It
+    is validated here, forwarded to the RAG pipeline so the generator can
+    produce in-language output, and echoed back in the response.
+    """
+    language = validate_language(language)
     analysis = process_healthcare_input(text)
     rag_query = analysis["recommended_rag_query"]
 
     try:
-        rag_result = rag_pipeline.run(rag_query)
+        rag_result = rag_pipeline.run(rag_query, language=language)
         recommendation = rag_result["answer"]
         sources = rag_result["retrieved_sources"]
         rag_metadata = dict(rag_result["metadata"])
@@ -76,11 +86,10 @@ def analyze_healthcare_text(text: str) -> dict[str, Any]:
             }
         )
     except Exception as exc:
-        # Do not expose provider, database, or credential details to clients.
         logger.exception(
             "RAG processing unavailable; returning legacy guidance fallback."
         )
-        recommendation = _legacy_guidance_fallback(analysis)
+        recommendation = _legacy_guidance_fallback(analysis, language)
         sources = []
         rag_metadata = {
             "rag_available": False,
@@ -89,11 +98,13 @@ def analyze_healthcare_text(text: str) -> dict[str, Any]:
         }
 
     return {
+        "text": text,
         "risk_level": analysis["risk_level"],
         "symptoms": analysis["symptoms"],
         "pregnancy_month": analysis["pregnancy_month"],
         "clinical_recommendation": recommendation,
         "sources": sources,
+        "language": language,
         "metadata": rag_metadata,
     }
 
@@ -110,12 +121,19 @@ def analyze_text():
     """Process symptoms text and calculate maternal risk factors."""
     data = request.get_json() or {}
     text = data.get('text', '').strip()
+    language = data.get('language', 'en')
     
     if not text:
         return jsonify({"error": "No healthcare text provided"}), 400
-        
+    
     try:
-        analysis_report = analyze_healthcare_text(text)
+        language = validate_language(language)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+         
+    try:
+        analysis_report = analyze_healthcare_text(text, language)
+        print(analysis_report)
         return jsonify(analysis_report), 200
     except Exception as e:
         return jsonify({"error": f"Internal processing error: {str(e)}"}), 500
@@ -129,6 +147,15 @@ def transcribe_audio():
     audio_file = request.files['audio']
     if audio_file.filename == '':
         return jsonify({"error": "Selected audio file is empty"}), 400
+
+    # The ISO-639-1 language selected on the frontend. We read it from the form
+    # (sent alongside the audio blob) and reuse it for both ASR and analysis.
+    language = request.form.get('language', 'en')
+
+    try:
+        language = validate_language(language)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
 
     # Save to a temporary file
     temp_dir = tempfile.gettempdir()
@@ -145,13 +172,16 @@ def transcribe_audio():
             raise RuntimeError("Whisper model is not initialized on this server.")
             
         print("Starting Whisper transcription...")
-        result = model.transcribe(temp_path)
+        # Honour the worker's language selection for ASR. Whisper accepts the
+        # same ISO-639-1 codes the frontend sends ("en", "hi", "mr", "te").
+        result = model.transcribe(temp_path, language=language)
         transcribed_text = result.get("text", "").strip()
         print(f"Transcribed Text: {transcribed_text}")
         
         # Process transcribed text through the same screening and RAG flow as
         # typed input.
-        analysis_report = analyze_healthcare_text(transcribed_text)
+        analysis_report = analyze_healthcare_text(transcribed_text, language)
+        print(analysis_report)
         return jsonify(analysis_report), 200
         
     except Exception as e:

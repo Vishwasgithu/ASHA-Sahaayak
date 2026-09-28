@@ -258,7 +258,7 @@ class RAGPipeline:
                 logger.exception("Knowledge-base indexing failed.")
                 raise PipelineIndexingError("Failed to build the RAG index.") from exc
 
-    def query(self, user_query: str) -> PipelineResponse:
+    def query(self, user_query: str, *, language: str = "en") -> PipelineResponse:
         """Retrieve evidence and generate a grounded maternal-health answer."""
         if not isinstance(user_query, str):
             raise TypeError("user_query must be a string.")
@@ -269,7 +269,7 @@ class RAGPipeline:
         with self._lock:
             try:
                 documents = self.retriever.retrieve(normalized_query, top_k=self._top_k)
-                answer = self.generator.generate(normalized_query, documents)
+                answer = self.generator.generate(normalized_query, documents, language=language)
                 sources: list[SourceResult] = [
                     {
                         "content": document.page_content,
@@ -297,6 +297,7 @@ class RAGPipeline:
         self,
         user_query: str,
         *,
+        language: str = "en",
         rebuild_index: bool = False,
         remove_stale: bool = True,
     ) -> PipelineResponse:
@@ -309,16 +310,17 @@ class RAGPipeline:
         with self._lock:
             if rebuild_index or self.vector_store.count() == 0:
                 self.build_index(remove_stale=remove_stale)
-            return self.query(user_query)
+            return self.query(user_query, language=language)
 
 
 def run_pipeline(
     user_query: str,
     *,
+    language: str = "en",
     rebuild_index: bool = False,
 ) -> PipelineResponse:
     """Execute the default end-to-end pipeline with one function call."""
-    return RAGPipeline().run(user_query, rebuild_index=rebuild_index)
+    return RAGPipeline().run(user_query, language=language, rebuild_index=rebuild_index)
 
 
 __all__ = [
